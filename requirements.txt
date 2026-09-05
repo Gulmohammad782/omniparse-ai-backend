@@ -6,3 +6,5 @@ google-generativeai
 sqlalchemy==2.0.30
 pymysql==1.1.0
 python-dotenv==1.0.1
+passlib==1.7.4
+bcrypt==4.1.3
