@@ -1,16 +1,21 @@
 import os
+import ssl
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
 
-# Update with your local MySQL credentials: username:password@host:port/database
 DATABASE_URL = os.getenv("DATABASE_URL")
 
-# Added connect_args to handle Aiven MySQL SSL requirement cleanly
+# Create a secure SSL context for Aiven MySQL
+ssl_context = ssl.create_default_context()
+ssl_context.check_hostname = False
+ssl_context.verify_mode = ssl.CERT_NONE  # Or CERT_REQUIRED depending on certificate strictness, CERT_NONE works well with Aiven public endpoints
+
 engine = create_engine(
     DATABASE_URL,
-    connect_args={"ssl": {}}
+    connect_args={"ssl": ssl_context}
 )
+
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
