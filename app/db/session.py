@@ -1,15 +1,14 @@
 import os
 import ssl
-
 from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
 
 DATABASE_URL = os.getenv("DATABASE_URL")
 
-# Create a secure SSL context for Aiven MySQL
+# Configure a secure SSL context for Aiven MySQL
 ssl_context = ssl.create_default_context()
 ssl_context.check_hostname = False
-ssl_context.verify_mode = ssl.CERT_NONE  # Or CERT_REQUIRED depending on certificate strictness, CERT_NONE works well with Aiven public endpoints
+ssl_context.verify_mode = ssl.CERT_NONE
 
 engine = create_engine(
     DATABASE_URL,
