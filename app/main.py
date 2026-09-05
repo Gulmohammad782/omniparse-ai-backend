@@ -21,10 +21,10 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:5173", 
-        "https://omniparse-ai-backend.onrender.com"
+        "https://omniparse-ai-frontend.vercel.app"
     ],
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["*"],    
     allow_headers=["*"],
 )
 
