@@ -19,7 +19,10 @@ app = FastAPI(title="OmniParse AI Enterprise Backend", version="3.0.0")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=[
+        "http://localhost:5173", 
+        "https://omniparse-ai-backend.onrender.com"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -93,6 +96,10 @@ def seed_default_admin():
             print("Default admin user seeded successfully.")
     finally:
         db.close()
+
+@app.get("/")
+def read_root():
+    return {"status": "online", "service": "OmniParse AI Backend Enterprise"}
 
 @app.post("/api/v1/login")
 async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
