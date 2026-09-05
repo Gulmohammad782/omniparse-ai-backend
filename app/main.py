@@ -1,6 +1,5 @@
-from fastapi import FastAPI, File, UploadFile, HTTPException, Depends, Form, status
+from fastapi import FastAPI, File, UploadFile, HTTPException, Depends, Form, status, Response
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from passlib.context import CryptContext
 from pydantic import BaseModel
@@ -17,17 +16,24 @@ Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="OmniParse AI Enterprise Backend", version="3.0.0")
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173", 
-        "https://omniparse-ai-frontend.vercel.app"
-    ],
-    allow_origin_regex=r"https://omniparse-ai-frontend.*\.vercel\.app",
-    allow_credentials=True,
-    allow_methods=["*"],    
-    allow_headers=["*"],
-)
+# Bulletproof custom CORS middleware
+@app.middleware("http")
+async def add_cors_headers(request, call_next):
+    origin = request.headers.get("origin")
+    if request.method == "OPTIONS":
+        response = Response(status_code=200)
+    else:
+        response = await call_next(request)
+    
+    if origin:
+        response.headers["Access-Control-Allow-Origin"] = origin
+    else:
+        response.headers["Access-Control-Allow-Origin"] = "https://omniparse-ai-frontend.vercel.app"
+        
+    response.headers["Access-Control-Allow-Credentials"] = "true"
+    response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS, PATCH"
+    response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization, X-Requested-With, Accept"
+    return response
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/v1/login")
 
